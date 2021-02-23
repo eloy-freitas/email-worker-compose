@@ -1,0 +1,31 @@
+version: '3.8'
+volumes: 
+  dados: 
+services: 
+  db:
+    image: postgres:9
+    restart: always
+    environment: 
+      POSTGRES_PASSWORD: 989678
+    volumes:
+      #volume dos dados
+      - dados:/var/lib/postgresql/data
+      #scripts
+      - ./scripts:/scripts
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+  frontend:
+    image: nginx:1.13   
+    volumes: 
+      #site
+      - ./web:/usr/share/nginx/html/
+    ports: 
+      - 80:80
+  app:
+    image: python:3.6
+    volumes:
+      #aplicação
+      - ./app:/app
+    working_dir: /app
+    command: bash ./app.sh
+    ports: 
+      - 8080:8080
